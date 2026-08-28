@@ -87,6 +87,42 @@
   .portal-main { width: 100%; min-height: calc(100vh - 83px); }
   .module { display: none; width: 100%; }
   .module.active { display: block; }
+  .module-home { display: none; width: 100%; min-height: calc(100vh - 83px); align-items: center; justify-content: center; padding: 40px 16px; }
+  .module-home.active { display: flex; }
+  .home-wrap { width: min(900px, 100%); text-align: center; }
+  .home-title { margin: 0; font-size: clamp(24px, 4vw, 36px); font-weight: 800; letter-spacing: .06em; }
+  .home-sub { margin: 10px 0 36px; color: var(--portal-muted); font-size: clamp(13px, 1.6vw, 16px); }
+  .home-cards { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+  .home-card {
+    appearance: none;
+    flex: 1 1 300px;
+    max-width: 360px;
+    background: var(--portal-panel);
+    border: 1px solid rgba(238,242,234,.14);
+    border-radius: 18px;
+    padding: 34px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: var(--portal-text);
+    transition: .18s ease;
+    text-align: center;
+  }
+  .home-card:hover {
+    transform: translateY(-4px);
+    background: var(--portal-panel-2);
+    border-color: var(--portal-gold);
+    box-shadow: 0 14px 32px rgba(0,0,0,.32);
+  }
+  .home-card-icon { font-size: 40px; }
+  .home-card-title { font-weight: 800; font-size: 17px; letter-spacing: .03em; }
+  .home-card-desc { color: var(--portal-muted); font-size: 13px; line-height: 1.4; }
+  @media (max-width: 680px) {
+    .home-cards { flex-direction: column; align-items: stretch; }
+    .home-card { max-width: 100%; }
+  }
   .module-frame {
     display: block;
     width: 100%;
@@ -114,15 +150,32 @@
         PORTAL UNIFICADO
         <span class="portal-subtitle">Selecione o sistema que deseja acessar</span>
       </div>
-      <div class="portal-actions">
-        <button class="portal-btn active" id="btn-conect" type="button" aria-controls="modulo-conect" aria-selected="true">🏫 Conect Escola</button>
-        <button class="portal-btn" id="btn-tutoria" type="button" aria-controls="modulo-tutoria" aria-selected="false">📚 Tutoria</button>
+      <div class="portal-actions" id="portal-actions" style="display:none;">
+        <button class="portal-btn" id="btn-inicio" type="button">🏠 Início</button>
       </div>
     </div>
   </nav>
 
   <main class="portal-main">
-    <section class="module active" id="modulo-conect" aria-hidden="false">
+    <section class="module-home active" id="tela-inicial">
+      <div class="home-wrap">
+        <h1 class="home-title">PORTAL UNIFICADO</h1>
+        <p class="home-sub">Selecione o sistema que deseja acessar</p>
+        <div class="home-cards">
+          <button class="home-card" id="card-conect" type="button">
+            <span class="home-card-icon">🏫</span>
+            <span class="home-card-title">Boletim Digital e PDF</span>
+            <span class="home-card-desc">Notas, boletins, ocorrências, registro pedagógico e geração de PDF</span>
+          </button>
+          <button class="home-card" id="card-tutoria" type="button">
+            <span class="home-card-icon">📚</span>
+            <span class="home-card-title">Tutoria</span>
+            <span class="home-card-desc">Acesso ao sistema de tutoria</span>
+          </button>
+        </div>
+      </div>
+    </section>
+    <section class="module" id="modulo-conect" aria-hidden="true">
       <iframe class="module-frame" id="frame-conect" title="Conect Escola 8 + Kanban"></iframe>
     </section>
     <section class="module" id="modulo-tutoria" aria-hidden="true">
@@ -1361,31 +1414,7 @@
   function inicializarBanco() {
     let banco = localStorage.getItem('banco_usuarios');
     if (!banco) {
-      const ALUNOS_DB_INICIAL = [
-        {
-          nome:"Ana Clara Silva",ra:"1000202400011",digito:"1",turma:"6A",
-          materias: {
-            "Matemática": [8.5, 7.0, 9.0, 8.0],
-            "Português": [6.0, 8.0, 7.5, 9.0],
-            "História": [9.0, 9.5, 8.0, 10.0]
-          }
-        },
-        {nome:"Arthur Santos Lima",ra:"1000202400012",digito:"2",turma:"6A",materias:{}},
-        {nome:"João Pedro Carvalho",ra:"1000202400021",digito:"1",turma:"6B",materias:{}},
-        {nome:"Alice Monteiro",ra:"1000202400031",digito:"1",turma:"7A",materias:{}},
-        {nome:"Miguel Ângelo",ra:"1000202400041",digito:"1",turma:"7B",materias:{}},
-        {nome:"André Luiz Soares",ra:"1000202400051",digito:"1",turma:"8A",materias:{}},
-        {nome:"Kauan Felipe",ra:"1000202400061",digito:"1",turma:"8B",materias:{}},
-        {nome:"Alan Kardec",ra:"1000202400071",digito:"1",turma:"9A",materias:{}},
-        {nome:"Marcos Paulo",ra:"1000202400081",digito:"1",turma:"9B",materias:{}},
-        {nome:"Alice Paulino",ra:"1000202400091",digito:"1",turma:"1A",materias:{}},
-        {nome:"Karen Junqueira",ra:"1000202400101",digito:"1",turma:"1B",materias:{}},
-        {nome:"Ulisses Campbell",ra:"1000202400111",digito:"1",turma:"1C",materias:{}},
-        {nome:"Elaine Mickely",ra:"1000202400121",digito:"1",turma:"2A",materias:{}},
-        {nome:"Otaviano Costa",ra:"1000202400131",digito:"1",turma:"2B",materias:{}},
-        {nome:"Alexandre Frota",ra:"1000202400141",digito:"1",turma:"3A-TECNICO",materias:{}},
-        {nome:"Klebber Toledo",ra:"1000202400151",digito:"1",turma:"3B-REGULAR",materias:{}}
-      ];
+      const ALUNOS_DB_INICIAL = [];
       localStorage.setItem('banco_usuarios', JSON.stringify(ALUNOS_DB_INICIAL));
     }
   }
@@ -3332,31 +3361,7 @@ const KB = (() => {
   function inicializarBanco() {
     let banco = localStorage.getItem('banco_usuarios');
     if (!banco) {
-      const ALUNOS_DB_INICIAL = [
-        {
-          nome:"Ana Clara Silva",ra:"1000202400011",digito:"1",turma:"6A",
-          materias: {
-            "Matemática": [8.5, 7.0, 9.0, 8.0],
-            "Português": [6.0, 8.0, 7.5, 9.0],
-            "História": [9.0, 9.5, 8.0, 10.0]
-          }
-        },
-        {nome:"Arthur Santos Lima",ra:"1000202400012",digito:"2",turma:"6A",materias:{}},
-        {nome:"João Pedro Carvalho",ra:"1000202400021",digito:"1",turma:"6B",materias:{}},
-        {nome:"Alice Monteiro",ra:"1000202400031",digito:"1",turma:"7A",materias:{}},
-        {nome:"Miguel Ângelo",ra:"1000202400041",digito:"1",turma:"7B",materias:{}},
-        {nome:"André Luiz Soares",ra:"1000202400051",digito:"1",turma:"8A",materias:{}},
-        {nome:"Kauan Felipe",ra:"1000202400061",digito:"1",turma:"8B",materias:{}},
-        {nome:"Alan Kardec",ra:"1000202400071",digito:"1",turma:"9A",materias:{}},
-        {nome:"Marcos Paulo",ra:"1000202400081",digito:"1",turma:"9B",materias:{}},
-        {nome:"Alice Paulino",ra:"1000202400091",digito:"1",turma:"1A",materias:{}},
-        {nome:"Karen Junqueira",ra:"1000202400101",digito:"1",turma:"1B",materias:{}},
-        {nome:"Ulisses Campbell",ra:"1000202400111",digito:"1",turma:"1C",materias:{}},
-        {nome:"Elaine Mickely",ra:"1000202400121",digito:"1",turma:"2A",materias:{}},
-        {nome:"Otaviano Costa",ra:"1000202400131",digito:"1",turma:"2B",materias:{}},
-        {nome:"Alexandre Frota",ra:"1000202400141",digito:"1",turma:"3A-TECNICO",materias:{}},
-        {nome:"Klebber Toledo",ra:"1000202400151",digito:"1",turma:"3B-REGULAR",materias:{}}
-      ];
+      const ALUNOS_DB_INICIAL = [];
       localStorage.setItem('banco_usuarios', JSON.stringify(ALUNOS_DB_INICIAL));
     }
   }
@@ -4048,8 +4053,11 @@ const KB = (() => {
 
 <script>
 (function () {
-  const btnConect = document.getElementById('btn-conect');
-  const btnTutoria = document.getElementById('btn-tutoria');
+  const btnInicio = document.getElementById('btn-inicio');
+  const portalActions = document.getElementById('portal-actions');
+  const telaInicial = document.getElementById('tela-inicial');
+  const cardConect = document.getElementById('card-conect');
+  const cardTutoria = document.getElementById('card-tutoria');
   const modConect = document.getElementById('modulo-conect');
   const modTutoria = document.getElementById('modulo-tutoria');
   const frameConect = document.getElementById('frame-conect');
@@ -4063,14 +4071,22 @@ const KB = (() => {
     }
   }
 
+  function irParaInicio() {
+    telaInicial.classList.add('active');
+    modConect.classList.remove('active');
+    modTutoria.classList.remove('active');
+    modConect.setAttribute('aria-hidden', 'true');
+    modTutoria.setAttribute('aria-hidden', 'true');
+    portalActions.style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   function ativarModulo(modulo) {
     const conect = modulo === 'conect';
+    telaInicial.classList.remove('active');
+    portalActions.style.display = '';
     modConect.classList.toggle('active', conect);
     modTutoria.classList.toggle('active', !conect);
-    btnConect.classList.toggle('active', conect);
-    btnTutoria.classList.toggle('active', !conect);
-    btnConect.setAttribute('aria-selected', String(conect));
-    btnTutoria.setAttribute('aria-selected', String(!conect));
     modConect.setAttribute('aria-hidden', String(!conect));
     modTutoria.setAttribute('aria-hidden', String(conect));
 
@@ -4079,11 +4095,11 @@ const KB = (() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  btnConect.addEventListener('click', function () { ativarModulo('conect'); });
-  btnTutoria.addEventListener('click', function () { ativarModulo('tutoria'); });
+  btnInicio.addEventListener('click', irParaInicio);
+  cardConect.addEventListener('click', function () { ativarModulo('conect'); });
+  cardTutoria.addEventListener('click', function () { ativarModulo('tutoria'); });
 
-  // Carrega somente o módulo inicial.
-  carregarFrame(frameConect, 'codigo-conect-escola');
+  // Nenhum módulo é carregado até o usuário escolher na tela inicial.
 })();
 </script>
 </body>
